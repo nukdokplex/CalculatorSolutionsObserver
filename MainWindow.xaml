@@ -1,0 +1,59 @@
+﻿<Window x:Class="CalculatorSolutionsObserver.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CalculatorSolutionsObserver"
+        mc:Ignorable="d"
+        Title="Поиск решений «Калькулятор»" Height="450" Width="800" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" MinWidth="200" MaxWidth="300"></ColumnDefinition>
+            <ColumnDefinition Width="5*"></ColumnDefinition>
+            <ColumnDefinition Width="1*" MinWidth="200" MaxWidth="300"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Background="AntiqueWhite" Grid.Row="0" Grid.Column="0">
+            <StackPanel Margin="10">
+                <TextBlock Text="Настройки калькулятора" FontSize="15"/>
+                <Grid Margin="0,5,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" Grid.Row="0" Grid.Column="0">Начало:</TextBlock>
+                    <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.Column="0">Конец:</TextBlock>
+                    <TextBox Grid.Row="0" Grid.Column="1" Name="startField">1</TextBox>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="endField">24</TextBox>
+                </Grid>
+                <TextBlock Text="Операции калькулятора" FontSize="15" Margin="0,15,0,0"/>
+                <ComboBox x:Name="OperationEggsField"  Margin="0,5,0,0" SelectionChanged="OperationEggsField_SelectionChanged"/>
+                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                    <TextBox x:Name="OperandField" IsEnabled="False" Text="1" Width="90"/>
+                    <Button x:Name="AddOperationButton" IsEnabled="False" Click="AddOperationButton_Click" Margin="10,0,0,0" Width="80">Добавить</Button>
+                </StackPanel>
+                <ListBox Height="200" x:Name="OperationsField" Margin="0,7,0,0" MouseDoubleClick="OperationsField_MouseDoubleClick">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Grid.Column="0" Text="{Binding Nicename}"></TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Button x:Name="ProcessButton" Click="ProcessButton_Click" Margin="0,10,0,0">Поиск решений</Button>
+            </StackPanel>
+            
+        </StackPanel>
+        <DockPanel Grid.Row="0" Grid.Column="1" Name="graphViewerPanel" ClipToBounds="True">
+           
+        </DockPanel>
+        <StackPanel Background="AntiqueWhite" Grid.Row="0" Grid.Column="2">
+            
+        </StackPanel>
+    </Grid>
+</Window>
