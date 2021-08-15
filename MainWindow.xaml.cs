@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using CalculatorSolutionsObserver.Utils;
 using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.WpfGraphControl;
@@ -125,31 +116,86 @@ namespace CalculatorSolutionsObserver
 
             var tree = new NTree<int, int>();
             tree.Value = start;
-            process(tree);
+
+            var graph = new Graph();
+
+            process(tree, out int solutionsCount);
+
+            CreateGraph(ref graph, tree);
+            DrawGraph(graph);
+            MessageBox.Show(solutionsCount.ToString());
         }
 
-        private void DrawGraph()
+        private void DrawGraph(Graph graph)
         {
-            Graph graph = new Graph();
-            
+            graphViewer.Graph = graph;
         }
 
-        private NTree<int, int> process(NTree<int, int> node)
+        private void CreateGraph(ref Graph graph, NTree<int, int> currentNode, Node parentNode = null)
         {
+            if (parentNode == null)
+            {
+                parentNode = new Node(Guid.NewGuid().ToString());
+                parentNode.LabelText = currentNode.Value.ToString();
+                parentNode.Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
+                parentNode.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Hexagon;
+                graph.AddNode(parentNode);
+                
+            }
+
+            foreach (NTree<int, int> child in currentNode.Children)
+            {
+                if (child.LinkValue > 0)
+                {
+                    Edge edge = graph.AddEdge(parentNode.Id, child.LinkValue.ToString(), Guid.NewGuid().ToString());
+                    edge.TargetNode.LabelText = child.Value.ToString();
+                    if (child.Value == end)
+                    {
+                        edge.TargetNode.Attr.Shape = Microsoft.Msagl.Drawing.Shape.DoubleCircle;
+                        edge.TargetNode.Attr.Color = Microsoft.Msagl.Drawing.Color.Red;
+                    }
+                    CreateGraph(ref graph, child, edge.TargetNode);
+                }
+            }
+        }
+
+        private NTree<int, int> process(NTree<int, int> node, out int linkValue)
+        {
+            linkValue = 0;
+
             if (start == end) return node;
 
-            foreach(Operation operation in operations)
+            foreach (Operation operation in operations)
             {
                 var currentNode = new NTree<int, int>();
-                currentNode.Value = operation.Execute(node.Value);
-                
-                if ((currentNode.Value < start && currentNode.Value > end) || (currentNode.Value > start && currentNode.Value < end))
+                try
                 {
-                    process(currentNode);
+                    currentNode.Value = operation.Execute(node.Value);
+                }
+                catch (Exception e)
+                {
+                    continue;
+                }
+                
+
+                if (currentNode.Value == end)
+                {
+                    linkValue++;
+                    currentNode.LinkValue = 1;
+                    node.AddChild(currentNode);
+                    continue;
                 }
 
-                node.AddChild(currentNode);
+                if ((currentNode.Value < start && currentNode.Value > end) || 
+                    (currentNode.Value > start && currentNode.Value < end))
+                {
+                    process(currentNode, out int childLinkValue);
+                    linkValue += childLinkValue;
+                    node.AddChild(currentNode);
+                }
             }
+
+            node.LinkValue = linkValue;
 
             return node;
         }

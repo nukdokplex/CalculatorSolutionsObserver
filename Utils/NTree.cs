@@ -12,6 +12,11 @@ namespace CalculatorSolutionsObserver.Utils
         public V LinkValue;
         public List<NTree<T, V>> Children = new List<NTree<T, V>>();
 
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+
         public int AddChild(NTree<T, V> node)
         {
             Children.Add(node);
